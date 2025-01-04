@@ -2,7 +2,8 @@ import { View, Text, Button, StyleSheet, TextInput, ActivityIndicator } from 're
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { FIREBASE_AUTH } from '@/config/FirebaseConfig';
-import { createUserWithEmailAndPassword } from '@firebase/auth';
+import { createUserWithEmailAndPassword, getAuth } from '@firebase/auth';
+import axios from "axios";
 
 const signup = () => {
     const [email, setEmail] = useState('')
@@ -13,8 +14,20 @@ const signup = () => {
     const signUp = async () => {
         setIsLoading(true)
         try {
-            await createUserWithEmailAndPassword(auth, email, password)
+            // create user in firebase
+            const user = await createUserWithEmailAndPassword(auth, email, password)
+
+            // get the token from firebase
+            const token = await user.user.getIdToken()
+
+            // send token to backend
+            const response = await axios.post(
+                "http://10.0.2.2:8000/login", 
+                { token }, 
+                { headers: { "Content-Type": "application/json"} }
+            )
             router.push('./success')
+
         } catch (error) {
             console.log(error)
         } finally {
