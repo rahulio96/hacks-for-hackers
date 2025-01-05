@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword, getAuth } from '@firebase/auth';
 import axios from "axios";
 import { useUser } from "@/contexts/UserConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomButton from '@/components/Button';
 
 const signup = () => {
     const [email, setEmail] = useState('')
@@ -50,7 +51,7 @@ const signup = () => {
     
     return (
         <View style={styles.container}>
-            <Text>Sign Up</Text>
+            <Text style={styles.title}>Sign Up</Text>
             <TextInput 
                 style={styles.input} 
                 value={email} placeholder="Email" 
@@ -65,9 +66,9 @@ const signup = () => {
             { isLoading ? (
                     <ActivityIndicator size="large" color="#0000ff"/>
                     ) : (
-                    <Button title="Create Account" onPress={signUp}/> )
+                    <CustomButton onPress={signUp} text="Create Account"/> )
             }
-            <Button title="Back" onPress={() => {router.back()}}/>
+            <CustomButton onPress={() => router.back()} text="Back"/>
         </View>
     )
 }
@@ -79,12 +80,19 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     input: {
-        width: 200,
+        width: 250,
         height: 40,
         margin: 12,
+        marginTop: 20,
         borderWidth: 1,
-        padding: 10
-    }
+        padding: 10,
+        fontSize: 16,
+    },
+    title: {
+        fontSize: 50,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
 })
 
 export default signup 

@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { useEffect } from 'react';
 import { router } from 'expo-router';
 import { useUser } from '@/contexts/UserConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomButton from '@/components/Button';
 
 const index = () => {
     const { user, setUser } = useUser()
@@ -12,7 +13,7 @@ const index = () => {
             const storedUser = await AsyncStorage.getItem("user")
             if (storedUser) {
                 setUser(JSON.parse(storedUser))
-                router.push('./auth/success')
+                // router.push('./auth/success')
             }
         }
         fetchUser()
@@ -20,12 +21,12 @@ const index = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Welcome to HackerPrep</Text>
+            <Text style={styles.title}>Welcome to</Text>
+            <Text style={styles.titlePurple}>HackerPrep</Text>
             <Text style={styles.subText}>Improve your communication and interviewing skills</Text>
             <View style={styles.gap}/>
-            <Text style={styles.subText}>Get started by signing up or logging in</Text>
-            <Button title="Log in" onPress={() => router.push('./auth/login')}/>
-            <Button title="Sign up" onPress={() => router.push('./auth/signup')}/>
+            <CustomButton onPress={() => router.push('./auth/login')} text="Log in"/>
+            <CustomButton onPress={() => router.push('./auth/signup')} text="Sign up"/>
         </View>
     )
 }
@@ -40,6 +41,11 @@ const styles = StyleSheet.create({
         fontSize: 50,
         fontWeight: 'bold'
     },
+    titlePurple: {
+        fontSize: 50,
+        fontWeight: 'bold',
+        color: '#9966CC'
+    },
     subText: {
         textAlign: 'center',
         fontSize: 20,
@@ -47,6 +53,12 @@ const styles = StyleSheet.create({
     },
     gap: {
         margin: 40
+    },
+    button: {
+        margin: 20,
+        width: 250,
+        backgroundColor: 'lightblue',
+        padding: 15,
     }
 })
 
