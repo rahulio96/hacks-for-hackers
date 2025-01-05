@@ -4,21 +4,24 @@ import { router } from 'expo-router';
 import { FIREBASE_AUTH } from '@/config/FirebaseConfig';
 import { createUserWithEmailAndPassword, getAuth } from '@firebase/auth';
 import axios from "axios";
+import { useUser } from "@/contexts/UserConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const signup = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const auth = FIREBASE_AUTH
+    const { user, setUser } = useUser()
 
     const signUp = async () => {
         setIsLoading(true)
         try {
             // create user in firebase
-            const user = await createUserWithEmailAndPassword(auth, email, password)
+            const newUser = await createUserWithEmailAndPassword(auth, email, password)
 
             // get the token from firebase
-            const token = await user.user.getIdToken()
+            const token = await newUser.user.getIdToken()
 
             // send token to backend
             const response = await axios.post(
@@ -26,6 +29,16 @@ const signup = () => {
                 { token }, 
                 { headers: { "Content-Type": "application/json"} }
             )
+
+            const userData = {
+                uid: response.data.uid,
+                email: response.data.email || "",
+                username: response.data.username || "",
+            }
+
+            await AsyncStorage.setItem("user", JSON.stringify(userData));
+            setUser(userData);
+
             router.push('./success')
 
         } catch (error) {
@@ -37,11 +50,24 @@ const signup = () => {
     
     return (
         <View style={styles.container}>
-        <Text>Sign Up</Text>
-        <TextInput style={styles.input} value={email} placeholder="Email" onChangeText={(text) => {setEmail(text)}}/>
-        <TextInput style={styles.input} value={password} placeholder="Password" onChangeText={(text) => {setPassword(text)}}/>
-        {isLoading ? <ActivityIndicator size="large" color="#0000ff"/> : <Button title="Create Account" onPress={signUp}/>}
-        <Button title="Back" onPress={() => {router.back()}}/>
+            <Text>Sign Up</Text>
+            <TextInput 
+                style={styles.input} 
+                value={email} placeholder="Email" 
+                onChangeText={(text) => {setEmail(text)}}
+            />
+            <TextInput 
+                style={styles.input} 
+                value={password} 
+                placeholder="Password" 
+                onChangeText={(text) => {setPassword(text)}}
+            />
+            { isLoading ? (
+                    <ActivityIndicator size="large" color="#0000ff"/>
+                    ) : (
+                    <Button title="Create Account" onPress={signUp}/> )
+            }
+            <Button title="Back" onPress={() => {router.back()}}/>
         </View>
     )
 }
