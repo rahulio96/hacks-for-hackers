@@ -5,7 +5,7 @@ import { FIREBASE_AUTH } from '@/config/FirebaseConfig';
 import { createUserWithEmailAndPassword, getAuth } from '@firebase/auth';
 import axios from "axios";
 import { useUser } from "@/contexts/UserConfig";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from '@/components/Button';
 
 const signup = () => {
@@ -37,7 +37,6 @@ const signup = () => {
                 username: response.data.username || "",
             }
 
-            await AsyncStorage.setItem("user", JSON.stringify(userData));
             setUser(userData);
 
             router.push('./success')

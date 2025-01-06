@@ -33,8 +33,8 @@ async def login(request: Request):
             }
             await database.execute(query, values)
         else:
-            email = user.get("email")
-            username = user.get("username")
+            email = user.email
+            username = user.username
 
         return {
             "message": "User logged in!", 
@@ -46,3 +46,27 @@ async def login(request: Request):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=401, detail="Invalid Firebase ID token")
+    
+@router.post("/getuser")
+async def fetchUser(request: Request):
+    try:
+        # Get the user's firebase uid
+        request = await request.json()
+        uid  = request.get("uid")
+        query = "SELECT * FROM users WHERE firebase_uid = :firebase_uid"
+        user = await database.fetch_one(query, {"firebase_uid": uid})
+
+        email = user.email
+        username = user.username
+        
+
+        return {
+            "message": "User fetched successfully", 
+            "firebase_uid": uid,
+            "email": email,
+            "username": username,
+        }
+
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=404, detail="User not found")

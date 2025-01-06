@@ -1,22 +1,46 @@
-import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
-import { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { useUser } from '@/contexts/UserConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomButton from '@/components/Button';
+import { onAuthStateChanged } from 'firebase/auth';
+import { FIREBASE_AUTH } from '@/config/FirebaseConfig';
+import axios from 'axios';
 
 const index = () => {
     const { user, setUser } = useUser()
+    const [uid, setUid] = useState('')
 
+    // Check if the user is logged in
     useEffect(() => {
-        const fetchUser = async () => {
-            const storedUser = await AsyncStorage.getItem("user")
-            if (storedUser) {
-                setUser(JSON.parse(storedUser))
-                // router.push('./auth/success')
+        // Pull from AsyncStorage
+        const unsub = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
+            if (user) {
+
+                // Set the uid
+                const uid = user.uid
+                setUid(uid)
+                
+                // Fetch the user info from postgres db
+                const response = await axios.post(
+                    "http://10.0.2.2:8000/getuser", 
+                    { uid },
+                    { headers: { "Content-Type": "application/json"} } 
+                )
+                
+                const userData = {
+                    uid: response.data.uid,
+                    email: response.data.email,
+                    username: response.data.username,
+                }
+
+                // Set the user in the context so it can be used accross the app
+                setUser(userData)
+                console.log("ALREADY LOGGED IN")
+                router.push('/auth/success')
             }
-        }
-        fetchUser()
+        })
+        return () => unsub()
     }, [])
 
     return (

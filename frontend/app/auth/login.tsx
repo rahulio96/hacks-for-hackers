@@ -14,16 +14,14 @@ const login = () => {
     const signIn = async () => {
         setIsLoading(true)
         try {
-            await signInWithEmailAndPassword(auth, email, password)
-            router.push('./success')
+            const existUser = await signInWithEmailAndPassword(auth, email, password)
+            // router.push('./auth/success')
         } catch (error) {
             console.log(error)
         } finally {
             setIsLoading(false)
         }
     }
-
-
 
     return (
         <View style={styles.container}>
