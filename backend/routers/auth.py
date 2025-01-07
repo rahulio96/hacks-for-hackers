@@ -8,16 +8,17 @@ async def login(request: Request):
     try:
         request = await request.json()
         token = request.get("token")
+        username = request.get("username")
 
         # Verify the Firebase ID token
-        decoded_token = auth.verify_id_token(token)
+        decoded_token = auth.verify_id_token(token, clock_skew_seconds=20)
         firebase_uid = decoded_token["uid"]
 
         # Check if the user exists in the database
         query = "SELECT * FROM users WHERE firebase_uid = :firebase_uid"
         user = await database.fetch_one(query, {"firebase_uid": firebase_uid})
         email = ""
-        username = ""
+        username = username
 
         if not user:
             # Insert new user if they don't exist
@@ -33,9 +34,8 @@ async def login(request: Request):
             }
             await database.execute(query, values)
         else:
-            email = user.email
-            username = user.username
-
+            raise HTTPException(status_code=400, detail="User already exists")
+        
         return {
             "message": "User logged in!", 
             "firebase_uid": firebase_uid,

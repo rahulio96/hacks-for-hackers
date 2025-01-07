@@ -1,12 +1,15 @@
 import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useUser } from "@/contexts/UserConfig";
 import CustomButton from '@/components/CustomButton';
 import { FIREBASE_AUTH } from '@/config/FirebaseConfig';
 import { router } from 'expo-router';
 
-const success = () => {
+const Home = () => {
   const { user, setUser } = useUser()
+  useEffect(() => {
+    console.log(user)
+  }, [])
 
   const handleSignOut = async () => {
     setUser({
@@ -20,7 +23,7 @@ const success = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{user?.email}</Text>
+      <Text style={styles.title}>{user?.username}</Text>
       <CustomButton 
         onPress={handleSignOut}
         text="Sign out"
@@ -41,4 +44,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default success
+export default Home

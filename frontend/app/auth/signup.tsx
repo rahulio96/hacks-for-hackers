@@ -1,11 +1,10 @@
-import { View, Text, Button, StyleSheet, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { FIREBASE_AUTH } from '@/config/FirebaseConfig';
-import { createUserWithEmailAndPassword, getAuth } from '@firebase/auth';
+import { createUserWithEmailAndPassword } from '@firebase/auth';
 import axios from "axios";
 import { useUser } from "@/contexts/UserConfig";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from '@/components/CustomButton';
 import CustomTextInput from '@/components/CustomTextInput';
 import PasswordInput from '@/components/auth/PasswordInput';
@@ -14,6 +13,7 @@ import EmailInput from '@/components/auth/EmailInput';
 const signup = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const auth = FIREBASE_AUTH
     const { user, setUser } = useUser()
@@ -30,21 +30,23 @@ const signup = () => {
             // send token to backend
             const response = await axios.post(
                 "http://10.0.2.2:8000/login", 
-                { token }, 
+                { token, username },
                 { headers: { "Content-Type": "application/json"} }
             )
 
             const userData = {
-                uid: response.data.uid,
-                email: response.data.email || "",
-                username: response.data.username || "",
+                uid: response.data.firebase_uid,
+                email: response.data.email,
+                username: response.data.username,
             }
-
+            console.log(userData)
             setUser(userData);
-
-            router.push('./success')
+            router.push('../(tabs)/home')
 
         } catch (error) {
+            if ((error as any).code == "auth/email-already-in-use") {
+                alert("Account already exists")
+            }
             console.log(error)
         } finally {
             setIsLoading(false)
@@ -55,6 +57,11 @@ const signup = () => {
         <View style={styles.container}>
             <Text style={styles.title}>Sign Up</Text>
             <EmailInput email={email} setEmail={setEmail}/>
+            <CustomTextInput 
+                placeholder="Leetcode username"
+                value={username}
+                onChangeText = {(text) => setUsername(text)}
+            />
             <PasswordInput password={password} setPassword={setPassword}/>
             { isLoading ? (
                     <ActivityIndicator size="large" color="#0000ff"/>

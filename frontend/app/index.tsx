@@ -29,7 +29,7 @@ const index = () => {
                 )
                 
                 const userData = {
-                    uid: response.data.uid,
+                    uid: response.data.firebase_uid,
                     email: response.data.email,
                     username: response.data.username,
                 }
@@ -37,7 +37,7 @@ const index = () => {
                 // Set the user in the context so it can be used accross the app
                 setUser(userData)
                 console.log("ALREADY LOGGED IN")
-                router.push('/auth/success')
+                router.push('/(tabs)/home')
             }
         })
         return () => unsub()
