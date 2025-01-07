@@ -1,9 +1,11 @@
-import { View, Text, Button, StyleSheet, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { FIREBASE_AUTH } from '@/config/FirebaseConfig';
 import { signInWithEmailAndPassword } from '@firebase/auth';
-import CustomButton from '@/components/Button';
+import CustomButton from '@/components/CustomButton';
+import EmailInput from '@/components/auth/EmailInput';
+import PasswordInput from '@/components/auth/PasswordInput';
 
 const login = () => {
     const [email, setEmail] = useState('')
@@ -14,8 +16,7 @@ const login = () => {
     const signIn = async () => {
         setIsLoading(true)
         try {
-            const existUser = await signInWithEmailAndPassword(auth, email, password)
-            // router.push('./auth/success')
+            await signInWithEmailAndPassword(auth, email, password)
         } catch (error) {
             console.log(error)
         } finally {
@@ -26,16 +27,8 @@ const login = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Login</Text>
-            <TextInput 
-                style={styles.input} 
-                value={email} placeholder="Email" 
-                onChangeText={(text) => {setEmail(text)}}
-            />
-            <TextInput 
-                style={styles.input} 
-                value={password} placeholder="Password" 
-                onChangeText={(text) => {setPassword(text)}}
-            />
+            <EmailInput email={email} setEmail={setEmail}/>
+            <PasswordInput password={password} setPassword={setPassword}/>
             {isLoading ? (<ActivityIndicator size="large" color="#0000ff"/>
                 ) : (<CustomButton onPress={signIn} text="Log in"/>)}
             <CustomButton onPress={() => router.back()} text="Back"/>
@@ -48,15 +41,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    input: {
-        width: 250,
-        height: 40,
-        margin: 12,
-        marginTop: 20,
-        borderWidth: 1,
-        padding: 10,
-        fontSize: 16,
     },
     title: {
         fontSize: 50,

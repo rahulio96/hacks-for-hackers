@@ -6,7 +6,10 @@ import { createUserWithEmailAndPassword, getAuth } from '@firebase/auth';
 import axios from "axios";
 import { useUser } from "@/contexts/UserConfig";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
-import CustomButton from '@/components/Button';
+import CustomButton from '@/components/CustomButton';
+import CustomTextInput from '@/components/CustomTextInput';
+import PasswordInput from '@/components/auth/PasswordInput';
+import EmailInput from '@/components/auth/EmailInput';
 
 const signup = () => {
     const [email, setEmail] = useState('')
@@ -51,17 +54,8 @@ const signup = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Sign Up</Text>
-            <TextInput 
-                style={styles.input} 
-                value={email} placeholder="Email" 
-                onChangeText={(text) => {setEmail(text)}}
-            />
-            <TextInput 
-                style={styles.input} 
-                value={password} 
-                placeholder="Password" 
-                onChangeText={(text) => {setPassword(text)}}
-            />
+            <EmailInput email={email} setEmail={setEmail}/>
+            <PasswordInput password={password} setPassword={setPassword}/>
             { isLoading ? (
                     <ActivityIndicator size="large" color="#0000ff"/>
                     ) : (
@@ -77,15 +71,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    input: {
-        width: 250,
-        height: 40,
-        margin: 12,
-        marginTop: 20,
-        borderWidth: 1,
-        padding: 10,
-        fontSize: 16,
     },
     title: {
         fontSize: 50,

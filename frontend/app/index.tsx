@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { useUser } from '@/contexts/UserConfig';
-import CustomButton from '@/components/Button';
+import CustomButton from '@/components/CustomButton';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from '@/config/FirebaseConfig';
 import axios from 'axios';

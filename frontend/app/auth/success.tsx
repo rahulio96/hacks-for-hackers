@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import { useUser } from "@/contexts/UserConfig";
-import CustomButton from '@/components/Button';
+import CustomButton from '@/components/CustomButton';
 import { FIREBASE_AUTH } from '@/config/FirebaseConfig';
 import { router } from 'expo-router';
 
